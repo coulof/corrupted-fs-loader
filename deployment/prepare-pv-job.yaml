@@ -30,7 +30,8 @@ spec:
           claimName: corrupted-fs-pvc
       containers:
       - name: load-container
-        image: quay.io/coulof/corrupted-fs-loader:latest  # Your custom image
+        image: quay.io/coulof/corrupted-fs-loader:latest
+        command: ["test.img"]
         securityContext:
           privileged: true  # Required for block device access
         volumeDevices:
