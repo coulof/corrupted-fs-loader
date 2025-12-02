@@ -1,2 +1,4 @@
 *.gz
 *.img
+pv_backup.yaml
+pvc_backup.yaml
