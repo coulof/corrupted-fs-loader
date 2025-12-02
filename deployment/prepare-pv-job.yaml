@@ -32,7 +32,7 @@ spec:
       - name: load-container
         image: quay.io/coulof/corrupted-fs-loader:latest
         imagePullPolicy: Always
-        args: ["/test.img"] # Choose the test you want to run, test.img is clean!
+        args: ["/e2fsprogs-master/tests/f_baddir/image"] # Choose the test you want to run, test.img is clean!
         securityContext:
           privileged: true  # Required for block device access
         volumeDevices:
