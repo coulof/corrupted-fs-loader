@@ -31,6 +31,7 @@ test:
 	$(KUBECTL) delete job/load-corrupted-image-job
 	./switch_pv_volume_mode.sh
 	$(KUBECTL) wait --for=jsonpath='{.status.phase}'=Bound pvc/$(PVC_NAME) --timeout=300s
+	$(KUBECTL) create -f deployment/run-corrupted-fs.yaml
 
 info:
 	@echo "Registry: $(REGISTRY)"

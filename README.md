@@ -9,23 +9,14 @@ A Kubernetes setup to load and mount corrupted ext4 filesystem images from the [
 - StorageClass with `reclaimPolicy: Retain`.
 
 ## Usage
-0. **Select the corrupted**
-   - Adjust the `Dockerfile` for the test (default `f_baddir`)
-1. **Build the Loader Image**:
-   - Build and push: `make all`
+1. **Select the corrupted**
+   - Adjust the [job/load-corrupted-image-job](deployment/prepare-pv-job.yaml) to select image with the corruption to test.
+   - The default is `/test.img` which is a clean test.
+   - For example, to test the bad directory set `spec.templates.spec.containers[0].args` to `/e2fsprogs-master/tests/f_baddir/image`
 
-2. **Deploy Block-Mode PVC/PV and Job**:
-   - Apply the PVC/PV YAML (`kubectl apply -f pv-pvc-job.yaml`).
-   - Wait for Job completion: `kubectl wait --for=condition=complete job/load-corrupted-image-job`.
-
-3. **Switch to Filesystem Mode**:
-   - Run the script `switch_pv_volume_mode.sh` (sets `OLD_VOL_MODE=Block`, `NEW_VOL_MODE=Filesystem`).
-   - Ensure extracted data is in `/mnt/corrupted_extracted` (run extraction Job separately if needed).
-
-4. **Mount in Pod**:
-   - Apply Pod YAML to mount at `/mnt/corrupted` (e.g., `kubectl apply -f pod.yaml`).
-   - Inspect: `kubectl exec -it sleep-corrupted-pod -- sh` and explore `/mnt/corrupted`.
-
+2. **Run a test**
+   - Running a test means to prepare a PVC/PV in block mode, load the corrupted fs, and switch to filesystem mode.
+   - Because a lot of the PVC/PV fields are immutable a `make test` will run all the steps involved.
 
 ## Notes
 - Volume mode switching reuses data via `Retain` policy.
