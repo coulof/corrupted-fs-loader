@@ -1,0 +1,57 @@
+# Block-Mode PV (unchanged across steps)
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: corrupted-fs-pv
+  labels:
+    app: corrupted-fs
+spec:
+  capacity:
+    storage: 10Mi
+  volumeMode: Block  # Required for raw block access
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /opt/k8s/corrupted_fs/corrupt_inode.img
+---
+# Block-Mode PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: corrupted-fs-pvc
+  labels:
+    app: corrupted-fs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Block
+  resources:
+    requests:
+      storage: 10Mi
+  selector:
+    matchLabels:
+      app: corrupted-fs
+---
+# Job to Load the Image
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-corrupted-image-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+      - name: corrupted-block-volume
+        persistentVolumeClaim:
+          claimName: corrupted-fs-pvc
+      containers:
+      - name: load-container
+        image: quay.io/coulof/corrupted-fs-loader:latest  # Your custom image
+        securityContext:
+          privileged: true  # Required for block device access
+        volumeDevices:
+        - name: corrupted-block-volume
+          devicePath: /dev/block-device  # Where the block device is mounted; the entrypoint script writes here
+      restartPolicy: Never
+  backoffLimit: 1
