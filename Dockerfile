@@ -6,6 +6,8 @@ RUN apk add --no-cache e2fsprogs util-linux coreutils curl
 RUN curl -LO https://github.com/tytso/e2fsprogs/raw/refs/heads/master/tests/f_baddir/image.gz && \
     gunzip image.gz &&  mv image /image_f_baddir.img
 
+RUN dd if=/dev/zero of=/test.img bs=1M count=10 && mkfs.ext3 /test.img
+
 # Copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 # Make the script executable
