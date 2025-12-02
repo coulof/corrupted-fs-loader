@@ -1,18 +1,3 @@
-# Block-Mode PV (unchanged across steps)
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: corrupted-fs-pv
-  labels:
-    app: corrupted-fs
-spec:
-  capacity:
-    storage: 10Mi
-  volumeMode: Block  # Required for raw block access
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: /opt/k8s/corrupted_fs/corrupt_inode.img
 ---
 # Block-Mode PVC
 apiVersion: v1
@@ -25,12 +10,10 @@ spec:
   accessModes:
     - ReadWriteOnce
   volumeMode: Block
+  storageClassName: powerstore-ext4-retain
   resources:
     requests:
       storage: 10Mi
-  selector:
-    matchLabels:
-      app: corrupted-fs
 ---
 # Job to Load the Image
 apiVersion: batch/v1

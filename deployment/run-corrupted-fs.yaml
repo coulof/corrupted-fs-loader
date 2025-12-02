@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: corrupted-fs-loader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: corrupted-fs-loader
+  template:
+    metadata:
+      labels:
+        app: corrupted-fs-loader
+    spec:
+      containers:
+      - name: corrupted-fs-loader
+        image: quay.io/coulof/corrupted-fs-loader:latest
+        command: ["sleep", "3600"]
+        volumeMounts:
+        - name: corrupted-fs-pvc
+          mountPath: /data
+      volumes:
+      - name: corrupted-fs-pvc
+        persistentVolumeClaim:
+          claimName: corrupted-fs-pvc
